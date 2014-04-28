@@ -60,6 +60,7 @@ class GoogleSiteMap {
             'excludeChildrenOf' => '',
             'showHidden' => false,
             'priorityTV' => 0,
+            'includeUrlProto' => false
         ),$config);
     }
 
@@ -100,7 +101,7 @@ class GoogleSiteMap {
             }
 
             if ($canParse) {
-                $url = $this->modx->makeUrl($id,'','','full');
+                $url = $this->makeUrl($id);
 
                 $date = $child->get('editedon') ? $child->get('editedon') : $child->get('createdon');
                 $date = date("Y-m-d", strtotime($date));
@@ -273,6 +274,18 @@ class GoogleSiteMap {
             $chunk->setContent($o);
         }
         return $chunk;
+    }
+    
+    private function makeUrl($id) {
+        $url = $this->modx->makeUrl($id, '', '', 'full');
+        if ($this->config['includeUrlProto'] && strpos($url, '//') === 0) {
+            $proto = 'http:';
+            if ((isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])) || $_SERVER['SERVER_PORT'] == 443) {
+                $proto = 'https:';
+            }
+            $url = $proto . $url;
+        }
+        return $url;
     }
 }
 
