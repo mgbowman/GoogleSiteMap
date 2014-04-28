@@ -53,6 +53,7 @@ class GoogleSiteMap {
             'templateFilter' => 'id',
             'itemSeparator' => "\n",
             'itemTpl' => 'gItem',
+			'itemLinkTpl' => 'gItemLink',
             'chunksPath' => $corePath.'elements/chunks/',
             'maxDepth' => 0,
             'excludeResources' => '',
@@ -315,9 +316,11 @@ class GoogleSiteMap {
                     $babelLinkContext = $this->modx->getContext($babelLinkContext);
                     if (!empty($babelLinkContext)) {
                         $babelLinkLang = $babelLinkContext->getOption('cultureKey');
-                        $babelLinkUrl = $this->makeUrl($babelLinkId);
-                        $babelLinkXml = '<xhtml:link rel="alternate" hreflang="%s" href="%s" />';                       
-                        $output[] = sprintf($babelLinkXml, $babelLinkLang, $babelLinkUrl);
+                        $babelLinkUrl = $this->makeUrl($babelLinkId);					
+						$output[] = $this->getChunk($this->config['itemLinkTpl'], array(
+							'hreflang' => $babelLinkLang,
+							'href' => $babelLinkUrl
+						));
                     }
                 }
                 $output = (!empty($output) ? implode("\n\t", $output) : '');
