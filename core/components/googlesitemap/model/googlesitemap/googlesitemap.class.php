@@ -312,10 +312,6 @@ class GoogleSiteMap {
                 $babelLinks = explode(';', $babelLinks);
                 foreach ($babelLinks as $babelLink) {
                     list($babelLinkContext, $babelLinkId) = explode(':', $babelLink);
-                    // // prevent link loops
-                    // if ($doc->id == $babelLinkId) {
-                    //  continue;
-                    // }
                     $babelLinkContext = $this->modx->getContext($babelLinkContext);
                     if (!empty($babelLinkContext)) {
                         $babelLinkLang = $babelLinkContext->getOption('cultureKey');
