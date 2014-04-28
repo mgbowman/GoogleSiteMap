@@ -61,7 +61,8 @@ class GoogleSiteMap {
             'excludeChildrenOf' => '',
             'showHidden' => false,
             'priorityTV' => 0,
-            'includeUrlProto' => false
+            'includeUrlProto' => false,
+            'includeBabelLinks' => false,
         ),$config);
     }
 
@@ -319,7 +320,7 @@ class GoogleSiteMap {
                         $babelLinkUrl = $this->makeUrl($babelLinkId);                   
                         $output[] = $this->getChunk($this->config['itemLinkTpl'], array(
                             'hreflang' => $babelLinkLang,
-                            'href' => $babelLinkUrl
+                            'href' => $babelLinkUrl,
                         ));
                     }
                 }
