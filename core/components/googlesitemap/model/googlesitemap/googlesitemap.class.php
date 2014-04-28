@@ -127,12 +127,17 @@ class GoogleSiteMap {
                         $priority = $priorityTV;
                     }
                 }
+                $links = '';
+                if ($this->config['includeBabelLinks']) {
+                    $links = $this->getBabelLinks($child);
+                }
                 /* add item to output */
                 $output .= $this->getChunk($this->config['itemTpl'],array(
                     'url' => $url,
                     'date' => $date,
                     'update' => $update,
                     'priority' => $priority,
+                    'links' => $links
                 )).$this->config['itemSeparator'];
             }
 
@@ -286,6 +291,43 @@ class GoogleSiteMap {
             $url = $proto . $url;
         }
         return $url;
+    }
+    
+    private function getBabelTvName() {
+        $babelTvName = null;
+        $babelNamespace = $this->modx->getObject('modNamespace', array('name' => 'babel'));
+        if (!empty($babelNamespace)) {
+            $babelTvName = $this->modx->getOption('babel.babelTvName');
+        }
+        return $babelTvName;
+    }
+    
+    private function getBabelLinks($doc) {
+        $output = '';
+        $babelTvName = $this->getBabelTvName();
+        if (!empty($babelTvName)) {
+            $babelLinks = $doc->getTVValue($babelTvName);
+            if (!empty($babelLinks)) {
+                $output = array();
+                $babelLinks = explode(';', $babelLinks);
+                foreach ($babelLinks as $babelLink) {
+                    list($babelLinkContext, $babelLinkId) = explode(':', $babelLink);
+                    // // prevent link loops
+                    // if ($doc->id == $babelLinkId) {
+                    //  continue;
+                    // }
+                    $babelLinkContext = $this->modx->getContext($babelLinkContext);
+                    if (!empty($babelLinkContext)) {
+                        $babelLinkLang = $babelLinkContext->getOption('cultureKey');
+                        $babelLinkUrl = $this->makeUrl($babelLinkId);
+                        $babelLinkXml = '<xhtml:link rel="alternate" hreflang="%s" href="%s" />';                       
+                        $output[] = sprintf($babelLinkXml, $babelLinkLang, $babelLinkUrl);
+                    }
+                }
+                $output = (!empty($output) ? implode("\n\t", $output) : '');
+            }
+        }
+        return $output;
     }
 }
 
